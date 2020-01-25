@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     // Movement
 
     public CharacterController2D controller;
+    public Animator animator;
 
     float horizontalMove = 0f;
     float walkSpeed = 40f;
@@ -19,11 +20,14 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        horizontalMove = Input.GetAxis("Horizontal");
+        horizontalMove = Input.GetAxis("Horizontal") * walkSpeed;
+
+        animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
         if (Input.GetButtonDown("Jump"))
         {
             jump = true;
+            animator.SetBool("IsJumping", true);
         }
 
         if (Input.GetButtonDown("Crouch"))
@@ -39,10 +43,21 @@ public class Player : MonoBehaviour
 
     }
 
+    public void OnLanding()
+    {
+        animator.SetBool("IsJumping", false);
+    }
+
+    public void OnCrouching(bool crch)
+    {
+        animator.SetBool("IsCrouching", crch);
+    }
+
     private void FixedUpdate()
     {
-        controller.Move(horizontalMove * walkSpeed * Time.deltaTime, crouch, jump);
+        controller.Move(horizontalMove * Time.deltaTime, crouch, jump);
         jump = false;
+        
     }
 
     // Combat
